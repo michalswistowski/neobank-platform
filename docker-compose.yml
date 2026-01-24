@@ -1,0 +1,8 @@
+services: 
+
+  wallet-db:
+
+  transaction-db:
+
+  currency-db:
+  
