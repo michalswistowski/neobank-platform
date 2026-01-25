@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: ${WALLET_DB_URL:jdb:posgresql://localhost:5432:wallet_db}
+    username: ${DATASOURCE_USERNAME:user}
+    password: ${DATASOURCE_PASSWORD:seret}

@@ -1,8 +1,70 @@
-services: 
+services:
+
+  api-gateway:
+    container_name: api-gateway
+
+  wallet-service:
+    container_name: wallet-service
+    build:
+      context: ./wallet-service
+      dockerfile: Dockerfile
+    depends_on:
+      - wallet-db
+
+  transaction-service:
+    container_name: transaction-service
+    build:
+      context: ./transaction-service
+      dockerfile: Dockerfile
+    depends_on:
+      - transaction-db
+
+  currency-service:
+    container_name: currency-service
+    build:
+      context: ./currency-service
+      dockerfile: Dockerfile
+    depends_on:
+      - currency-db
 
   wallet-db:
+    image: postgres:18-alpine3.23
+    container_name: wallet-db
+    environment:
+      - POSTGRES_DB = wallet_db
+      - POSTGRES_USER = user
+      - POSTGRES_PASSWORD = secret
+    ports:
+      - 5432
+    volumes:
+      - ./postgres-wallet:/data/postgres
+    restart: always
 
   transaction-db:
+    image: postgres:18-alpine3.23
+    container_name: transaction-db
+    environment:
+      - POSTGRES_DB = transaction_db
+      - POSTGRES_USER = user
+      - POSTGRES_PASSWORD = secret
+    ports:
+      - 5433
+    volumes:
+      - ./postgres-transaction:/data/postgres
+    restart: always
 
   currency-db:
-  
+    image: postgres:18-alpine3.23
+    container_name: currency-db
+    environment:
+      - POSTGRES_DB = currency_db
+      - POSTGRES_USER = user
+      - POSTGRES_PASSWORD = secret
+    ports:
+      - 5435
+    volumes:
+      - ./postgres-currency:/data/postgres
+    restart: always
+
+volumes:
+  postgres_data:
