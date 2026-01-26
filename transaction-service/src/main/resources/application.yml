@@ -1,5 +1,21 @@
 spring:
+  application:
+    name: transaction-service
+
   datasource:
-    url: ${WALLET_DB_URL:jdb:posgresql://localhost:5432:transaction_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433:transaction_db}
     username: ${DATASOURCE_USERNAME:user}
-    password: ${DATASOURCE_PASSWORD:seret}
+    password: ${DATASOURCE_PASSWORD:secret}
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka
+
+server:
+  port: 0

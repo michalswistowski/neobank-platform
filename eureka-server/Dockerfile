@@ -35,4 +35,5 @@ RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
 # Run the jar (assuming the jar ends up in target/app.jar)
-ENTRYPOINT ["java", "-jar", "transaction-service/target/transaction-service-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar eureka-server/target/*.jar"]
+#ENTRYPOINT ["java", "-jar", "discovery-server/target/discovery-server-0.0.1-SNAPSHOT.jar"]

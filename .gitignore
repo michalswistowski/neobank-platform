@@ -57,3 +57,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+postgres-currency
+postgres-transaction
+postgres-wallet

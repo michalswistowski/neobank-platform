@@ -1,70 +1,107 @@
 services:
 
-  api-gateway:
-    container_name: api-gateway
-
-  wallet-service:
-    container_name: wallet-service
-    build:
-      context: ./wallet-service
-      dockerfile: Dockerfile
-    depends_on:
-      - wallet-db
-
-  transaction-service:
-    container_name: transaction-service
-    build:
-      context: ./transaction-service
-      dockerfile: Dockerfile
-    depends_on:
-      - transaction-db
-
-  currency-service:
-    container_name: currency-service
-    build:
-      context: ./currency-service
-      dockerfile: Dockerfile
-    depends_on:
-      - currency-db
-
   wallet-db:
     image: postgres:18-alpine3.23
     container_name: wallet-db
     environment:
-      - POSTGRES_DB = wallet_db
-      - POSTGRES_USER = user
-      - POSTGRES_PASSWORD = secret
+      - POSTGRES_DB=wallet_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=secret
+      - PGDATA=/data/postgres
     ports:
-      - 5432
+      - 5432:5432
     volumes:
       - ./postgres-wallet:/data/postgres
-    restart: always
+    restart: unless-stopped
 
   transaction-db:
     image: postgres:18-alpine3.23
     container_name: transaction-db
     environment:
-      - POSTGRES_DB = transaction_db
-      - POSTGRES_USER = user
-      - POSTGRES_PASSWORD = secret
+      - POSTGRES_DB=transaction_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=secret
+      - PGDATA=/data/postgres
     ports:
-      - 5433
+      - 5433:5433
+    command: -p 5433
     volumes:
       - ./postgres-transaction:/data/postgres
-    restart: always
+    restart: unless-stopped
 
   currency-db:
     image: postgres:18-alpine3.23
     container_name: currency-db
     environment:
-      - POSTGRES_DB = currency_db
-      - POSTGRES_USER = user
-      - POSTGRES_PASSWORD = secret
+      - POSTGRES_DB=currency_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=secret
+      - PGDATA=/data/postgres
     ports:
-      - 5435
+      - 5434:5434
+    command: -p 5434
     volumes:
       - ./postgres-currency:/data/postgres
-    restart: always
+    restart: unless-stopped
 
-volumes:
-  postgres_data:
+  discovery-server:
+    container_name: discovery-server
+    build:
+      context: .
+      dockerfile: eureka-server/Dockerfile
+    ports:
+      - 8761
+    healthcheck:
+      # This checks if the port is open and responding
+      test: [ "CMD-SHELL", "java -version || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+    depends_on:
+      - discovery-server
+
+  wallet-service:
+    container_name: wallet-service
+    build:
+      context: .
+      dockerfile: wallet-service/Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://wallet-db:5432/wallet_db
+    depends_on:
+      - wallet-db
+      - discovery-server
+      - api-gateway
+
+  transaction-service:
+    container_name: transaction-service
+    build:
+      context: .
+      dockerfile: transaction-service/Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://transaction-db:5433/transaction_db
+    depends_on:
+      - transaction-db
+      - discovery-server
+      - api-gateway
+
+  currency-service:
+    container_name: currency-service
+    build:
+      context: .
+      dockerfile: currency-service/Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://currency-db:5434/currency_db
+    depends_on:
+      - currency-db
+      - discovery-server
+      - api-gateway

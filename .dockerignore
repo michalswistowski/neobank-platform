@@ -1,0 +1,15 @@
+postgres-currency
+postgres-transaction
+postgres-wallet
+
+**/target/
+**/*.jar
+
+# Ignore IDE files
+.idea/
+.vscode/
+*.iml
+
+# Ignore Version Control
+.git/
+.gitignore

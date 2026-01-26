@@ -1,21 +1,38 @@
+##
+## Build
+##
+#FROM maven:3.9.12-eclipse-temurin-25 AS build
 #
-# Build
+#WORKDIR /usr/src/app
 #
-FROM maven:eclipse-temurin:25 AS build
-
-WORKDIR /usr/src/app
-
-COPY . ./
-
-RUN mvn clean package -Dmaven.test.skip
-
+#COPY . ./
 #
-# Package
+#COPY ../pom.xml ../pom.xml
 #
-FROM eclipse-temurin:25
+#RUN mvn clean package -Dmaven.test.skip
+#
+##
+## Package
+##
+#FROM eclipse-temurin:25
+#
+#WORKDIR /usr/src/app
+#
+#COPY --from=build /usr/src/app/target/*.jar ./app.jar
+#
+#ENTRYPOINT ["java", "-jar", "./app.jar"]
 
-WORKDIR /usr/src/app
+FROM eclipse-temurin:25-jdk
 
-COPY --from=build /usr/src/app/target/*.jar ./app.jar
+WORKDIR /app
 
-ENTRYPOINT ["java", "-jar", ".app.jar"]
+# Copy your whole project into the container
+COPY . .
+
+RUN chmod +x mvnw
+
+# Use the wrapper to build instead of "mvn"
+RUN ./mvnw clean package -DskipTests
+
+# Run the jar (assuming the jar ends up in target/app.jar)
+ENTRYPOINT ["java", "-jar", "wallet-service/target/wallet-service-0.0.1-SNAPSHOT.jar"]

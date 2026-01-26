@@ -20,6 +20,8 @@
 #
 #COPY --from=build /usr/src/app/target/*.jar ./app.jar
 #
+#EXPOSE 8080
+#
 #ENTRYPOINT ["java", "-jar", "./app.jar"]
 
 FROM eclipse-temurin:25-jdk
@@ -35,4 +37,4 @@ RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
 # Run the jar (assuming the jar ends up in target/app.jar)
-ENTRYPOINT ["java", "-jar", "transaction-service/target/transaction-service-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "api-gateway/target/api-gateway-0.0.1-SNAPSHOT.jar"]

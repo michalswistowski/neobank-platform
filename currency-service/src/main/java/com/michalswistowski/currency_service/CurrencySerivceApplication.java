@@ -9,5 +9,4 @@ public class CurrencySerivceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CurrencySerivceApplication.class, args);
 	}
-
 }
