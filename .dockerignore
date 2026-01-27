@@ -13,3 +13,10 @@ postgres-wallet
 # Ignore Version Control
 .git/
 .gitignore
+
+!platform-bom/
+!api-gateway/
+!eureka-server/
+!currency-service/
+!transaction-service/
+!wallet-service/
