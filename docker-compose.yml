@@ -105,3 +105,9 @@ services:
       - currency-db
       - discovery-server
       - api-gateway
+      - redis
+
+  redis:
+    image: "redis:8.4.0"
+    ports:
+      - "6379:6379"
