@@ -9,6 +9,8 @@ import com.michalswistowski.currency_service.mapper.CurrencyMapper;
 import com.michalswistowski.currency_service.repository.CurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CurrencyService {
+
+    public static final String EXCHANGE_RATES_CACHE = "rates";
 
     private final CurrencyRepository currencyRepository;
     private final ExchangeRatesClient exchangeRatesClient;
@@ -63,11 +67,21 @@ public class CurrencyService {
         return currencyMapper.mapCurrencyToCurrencyResponse(currency);
     }
 
+    @CachePut(value = EXCHANGE_RATES_CACHE, key = "#symbol.toUpperCase()")
+    public CurrencyExchangeRatesResponse updateExchangeRates(String symbol) {
+        return requestAndFilterExchangeRates(symbol);
+    }
+
+    @Cacheable(value = EXCHANGE_RATES_CACHE, key = "#symbol.toUpperCase()")
     public CurrencyExchangeRatesResponse getExchangeRates(String symbol) {
+        return requestAndFilterExchangeRates(symbol);
+    }
+
+    private CurrencyExchangeRatesResponse requestAndFilterExchangeRates(String symbol) {
         List<CurrencyResponse> currencies = getAllCurrencies();
 
         CurrencyExchangeRatesResponse allRates = exchangeRatesClient.getExchangeRates(symbol);
-
+//      todo implement circuitbreaker
         Map<String, String> filteredRates = new HashMap<>();
 
         currencies.forEach(currency ->

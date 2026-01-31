@@ -9,7 +9,7 @@ services:
       - POSTGRES_PASSWORD=secret
       - PGDATA=/data/postgres
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - ./postgres-wallet:/data/postgres
     restart: unless-stopped
@@ -23,7 +23,7 @@ services:
       - POSTGRES_PASSWORD=secret
       - PGDATA=/data/postgres
     ports:
-      - 5433:5433
+      - "5433:5433"
     command: -p 5433
     volumes:
       - ./postgres-transaction:/data/postgres
@@ -38,7 +38,7 @@ services:
       - POSTGRES_PASSWORD=secret
       - PGDATA=/data/postgres
     ports:
-      - 5434:5434
+      - "5434:5434"
     command: -p 5434
     volumes:
       - ./postgres-currency:/data/postgres
@@ -64,7 +64,7 @@ services:
       context: .
       dockerfile: api-gateway/Dockerfile
     ports:
-      - 8080:8080
+      - "8080:8080"
     expose:
       - 8080
     depends_on:
