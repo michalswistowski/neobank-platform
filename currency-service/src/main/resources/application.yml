@@ -3,7 +3,7 @@ spring:
     name: currency-service
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdb:postgresql://localhost:5434:currency_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434:currency_db}
     username: ${DATASOURCE_USERNAME:user}
     password: ${DATASOURCE_PASSWORD:secret}
 
