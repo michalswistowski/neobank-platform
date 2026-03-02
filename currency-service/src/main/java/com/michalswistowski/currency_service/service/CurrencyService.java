@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,13 +48,14 @@ public class CurrencyService {
     }
 
     public CurrencyResponse addCurrency(CurrencyRequest request) {
-//        Currency currency = new Currency();
-//        currency.setActive(false);
-//        currency.setSymbol(request.symbol());
-//        currency.setCreatedAt(LocalDateTime.now());
+
+        Optional<Currency> foundCurrency = currencyRepository.findBySymbol(request.symbol());
+
+        if (foundCurrency.isPresent()) {
+            throw new IllegalArgumentException("Currency with symbol %s already exists".formatted(request.symbol()));
+        }
 
         Currency currency = currencyRepository.save(currencyMapper.mapCurrencyRequestToCurrency(request));
-
         return currencyMapper.mapCurrencyToCurrencyResponse(currency);
     }
 
@@ -78,7 +80,15 @@ public class CurrencyService {
     }
 
     private CurrencyExchangeRatesResponse requestAndFilterExchangeRates(String symbol) {
-        List<CurrencyResponse> currencies = getAllCurrencies();
+
+        Currency foundCurrency = currencyRepository.findBySymbol(symbol).orElseThrow(() ->
+                new IllegalArgumentException("Currency with symbol %s not found".formatted(symbol)));
+
+        if (!foundCurrency.isActive()) {
+            throw new IllegalArgumentException("Currency with symbol %s is inactive".formatted(symbol));
+        }
+
+        List<CurrencyResponse> currencies = getAllActiveCurrencies();
 
         CurrencyExchangeRatesResponse allRates = exchangeRatesClient.getExchangeRates(symbol);
 //      todo implement circuitbreaker
@@ -92,6 +102,9 @@ public class CurrencyService {
     }
 
     public void deleteCurrency(Long id) {
+        if (!currencyRepository.existsById(id)) {
+            throw new IllegalArgumentException("Currency with id %d not found".formatted(id));
+        }
         currencyRepository.deleteById(id);
     }
 }
