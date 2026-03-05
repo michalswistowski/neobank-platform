@@ -1,6 +1,7 @@
 package com.michalswistowski.currency_service.config;
 
 import com.michalswistowski.currency_service.dto.CurrencyExchangeRatesResponse;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -12,6 +13,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import java.time.Duration;
 
 @Configuration
+@EnableCaching // here, because sliced test was not passing due to previous annotation on top of main class
 public class RedisCacheConfig {
 
     @Bean

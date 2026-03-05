@@ -8,6 +8,17 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate.ddl-auto: create-drop
     show-sql: true
-  h2:
+
+  cloud:
+    discovery:
+      enabled: false
+h2:
   console:
-enabled: true
+    enabled: true
+
+
+eureka:
+  client:
+    enabled: false
+    fetch-registry: false
+    register-with-eureka: false

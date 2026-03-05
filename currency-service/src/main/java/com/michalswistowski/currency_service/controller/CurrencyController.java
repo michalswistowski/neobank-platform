@@ -4,6 +4,7 @@ import com.michalswistowski.currency_service.dto.CurrencyExchangeRatesResponse;
 import com.michalswistowski.currency_service.dto.CurrencyRequest;
 import com.michalswistowski.currency_service.dto.CurrencyResponse;
 import com.michalswistowski.currency_service.service.CurrencyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class CurrencyController {
     }
 
     @PostMapping
-    public ResponseEntity<CurrencyResponse> addCurrency(@RequestBody CurrencyRequest request) {
+    public ResponseEntity<CurrencyResponse> addCurrency(@Valid @RequestBody CurrencyRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(currencyService.addCurrency(request));
     }
 }

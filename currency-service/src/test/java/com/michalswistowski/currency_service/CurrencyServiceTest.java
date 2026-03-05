@@ -5,6 +5,9 @@ import com.michalswistowski.currency_service.dto.CurrencyExchangeRatesResponse;
 import com.michalswistowski.currency_service.dto.CurrencyRequest;
 import com.michalswistowski.currency_service.dto.CurrencyResponse;
 import com.michalswistowski.currency_service.entity.Currency;
+import com.michalswistowski.currency_service.exception.CurrencyNotActiveException;
+import com.michalswistowski.currency_service.exception.EntityAlreadyExistsException;
+import com.michalswistowski.currency_service.exception.NotFoundException;
 import com.michalswistowski.currency_service.mapper.CurrencyMapper;
 import com.michalswistowski.currency_service.repository.CurrencyRepository;
 import com.michalswistowski.currency_service.service.CurrencyService;
@@ -301,7 +304,7 @@ class CurrencyServiceTest {
 
         CurrencyRequest currencyRequest = new CurrencyRequest("PLN");
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(EntityAlreadyExistsException.class, () -> {
             currencyService.addCurrency(currencyRequest);
         });
 
@@ -385,7 +388,7 @@ class CurrencyServiceTest {
 
         when(currencyRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(NotFoundException.class, () -> {
             currencyService.setActiveCurrency(1L, true);
         });
 
@@ -463,7 +466,7 @@ class CurrencyServiceTest {
 
         when(currencyRepository.findBySymbol("PLN")).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> currencyService.getExchangeRates("PLN"));
+        assertThrows(NotFoundException.class, () -> currencyService.getExchangeRates("PLN"));
 
         verify(currencyRepository, times(1)).findBySymbol("PLN");
         verify(currencyRepository, times(0)).findByActiveTrue();
@@ -482,7 +485,7 @@ class CurrencyServiceTest {
 
         when(currencyRepository.findBySymbol("EUR")).thenReturn(Optional.of(currency));
 
-        assertThrows(IllegalArgumentException.class, () -> currencyService.getExchangeRates("EUR"));
+        assertThrows(CurrencyNotActiveException.class, () -> currencyService.getExchangeRates("EUR"));
 
         verify(currencyRepository, times(1)).findBySymbol("EUR");
         verify(currencyRepository, times(0)).findByActiveTrue();
@@ -505,7 +508,7 @@ class CurrencyServiceTest {
         when(currencyRepository.existsById(1L)).thenReturn(false);
 
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(NotFoundException.class, () -> {
             currencyService.deleteCurrency(1L);
         });
 

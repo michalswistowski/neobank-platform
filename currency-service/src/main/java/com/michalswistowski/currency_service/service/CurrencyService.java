@@ -5,6 +5,9 @@ import com.michalswistowski.currency_service.dto.CurrencyExchangeRatesResponse;
 import com.michalswistowski.currency_service.dto.CurrencyRequest;
 import com.michalswistowski.currency_service.dto.CurrencyResponse;
 import com.michalswistowski.currency_service.entity.Currency;
+import com.michalswistowski.currency_service.exception.CurrencyNotActiveException;
+import com.michalswistowski.currency_service.exception.EntityAlreadyExistsException;
+import com.michalswistowski.currency_service.exception.NotFoundException;
 import com.michalswistowski.currency_service.mapper.CurrencyMapper;
 import com.michalswistowski.currency_service.repository.CurrencyRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +55,7 @@ public class CurrencyService {
         Optional<Currency> foundCurrency = currencyRepository.findBySymbol(request.symbol());
 
         if (foundCurrency.isPresent()) {
-            throw new IllegalArgumentException("Currency with symbol %s already exists".formatted(request.symbol()));
+            throw new EntityAlreadyExistsException("Currency with symbol %s already exists".formatted(request.symbol()));
         }
 
         Currency currency = currencyRepository.save(currencyMapper.mapCurrencyRequestToCurrency(request));
@@ -62,7 +65,7 @@ public class CurrencyService {
     public CurrencyResponse setActiveCurrency(Long id, boolean value) {
         Currency currency = currencyRepository.findById(id)
                 .orElseThrow(() ->
-                new IllegalArgumentException("Currency with id %d not found".formatted(id)));
+                new NotFoundException("Currency with id %d not found".formatted(id)));
 
         currency.setActive(value);
         currency = currencyRepository.save(currency);
@@ -82,10 +85,10 @@ public class CurrencyService {
     private CurrencyExchangeRatesResponse requestAndFilterExchangeRates(String symbol) {
 
         Currency foundCurrency = currencyRepository.findBySymbol(symbol).orElseThrow(() ->
-                new IllegalArgumentException("Currency with symbol %s not found".formatted(symbol)));
+                new NotFoundException("Currency with symbol %s not found".formatted(symbol)));
 
         if (!foundCurrency.isActive()) {
-            throw new IllegalArgumentException("Currency with symbol %s is inactive".formatted(symbol));
+            throw new CurrencyNotActiveException("Currency with symbol %s is inactive".formatted(symbol));
         }
 
         List<CurrencyResponse> currencies = getAllActiveCurrencies();
@@ -103,7 +106,7 @@ public class CurrencyService {
 
     public void deleteCurrency(Long id) {
         if (!currencyRepository.existsById(id)) {
-            throw new IllegalArgumentException("Currency with id %d not found".formatted(id));
+            throw new NotFoundException("Currency with id %d not found".formatted(id));
         }
         currencyRepository.deleteById(id);
     }
