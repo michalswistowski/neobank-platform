@@ -13,16 +13,16 @@ public class CurrencyScheduler {
 
     private final CurrencyService currencyService;
 
-    @Scheduled(initialDelay = 30000, fixedDelay = 300000)
+    @Scheduled(initialDelay = 30000, fixedDelay = 30000)
     public void requestAndUpdateExchangeRates() {
 
         System.out.println("Updating exchange rates...");
 
-//      todo change for active only
-        List<CurrencyResponse> activeCurrencies = currencyService.getAllCurrencies();
+        List<CurrencyResponse> activeCurrencies = currencyService.getAllActiveCurrencies();
 
         activeCurrencies.forEach(currency ->
-                currencyService.updateExchangeRates(currency.symbol()));
+                currencyService.getAndUpdateRate(currency.symbol(), activeCurrencies));
+
         System.out.println("Updated exchange rates");
     }
 }

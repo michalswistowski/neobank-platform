@@ -27,6 +27,13 @@ public class CurrencyController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/activate/{id}")
+    public ResponseEntity<CurrencyResponse> setActiveCurrency(@PathVariable Long id) {
+
+        CurrencyResponse response = currencyService.setActiveCurrency(id, true);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping
     public ResponseEntity<List<CurrencyResponse>> getAllCurrencies() {
         return ResponseEntity.ok(currencyService.getAllCurrencies());

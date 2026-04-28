@@ -11,4 +11,6 @@ public interface CurrencyMapper {
     CurrencyResponse mapCurrencyToCurrencyResponse(Currency currency);
 
     Currency mapCurrencyRequestToCurrency(CurrencyRequest currencyRequest);
+
+    Currency mapCurrencyResponseToCurrency(CurrencyResponse currencyResponse);
 }
