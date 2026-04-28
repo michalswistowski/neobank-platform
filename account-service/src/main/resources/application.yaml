@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: account-service
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5435:account_db}
+    username: ${DATASOURCE_USERNAME:user}
+    password: ${DATASOURCE_PASSWORD:secret}
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka
+
+server:
+  port: 0
+
+logging:
+  level:
+    org:
+      springframework:
+        cache: TRACE

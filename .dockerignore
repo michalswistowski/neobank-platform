@@ -20,3 +20,4 @@ postgres-wallet
 !currency-service/
 !transaction-service/
 !wallet-service/
+!account-service

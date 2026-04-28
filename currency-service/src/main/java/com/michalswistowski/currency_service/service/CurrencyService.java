@@ -73,10 +73,6 @@ public class CurrencyService {
         return currencyMapper.mapCurrencyToCurrencyResponse(currency);
     }
 
-//    @CachePut(value = EXCHANGE_RATES_CACHE, key = "#symbol.toUpperCase()")
-//    public CurrencyExchangeRatesResponse updateExchangeRates(String symbol, List<>) {
-//        return requestAndFilterExchangeRates(symbol);
-//    }
 
     @Cacheable(value = EXCHANGE_RATES_CACHE, key = "#symbol.toUpperCase()")
     public CurrencyExchangeRatesResponse getExchangeRates(String symbol) {
@@ -85,45 +81,6 @@ public class CurrencyService {
 
         return getAndUpdateRate(symbol, currencies);
     }
-
-//    private CurrencyExchangeRatesResponse requestAndFilterExchangeRates(String symbol) {
-//
-//        Currency foundCurrency = currencyRepository.findBySymbol(symbol).orElseThrow(() ->
-//                new NotFoundException("Currency with symbol %s not found".formatted(symbol)));
-//
-//        if (!foundCurrency.isActive()) {
-//            throw new CurrencyNotActiveException("Currency with symbol %s is inactive".formatted(symbol));
-//        }
-//
-//        List<CurrencyResponse> currencies = getAllActiveCurrencies();
-//
-//        CurrencyExchangeRatesResponse allRates = exchangeRatesClient.getExchangeRates(symbol);
-////      todo implement circuitbreaker
-//        Map<String, String> filteredRates = new HashMap<>();
-//
-//        List<ExchangeRate> ratesToSave = new ArrayList<>();
-//
-//        currencies.forEach(currency -> {
-//            String rateValue = allRates.data().rates().get(currency.symbol());
-//
-//
-//
-//            ExchangeRate rate = exchangeRatesRepository
-//                    .findByBaseCurrency_IdAndTargetCurrency_Id(foundCurrency.getId(), currency.id()).orElse(new ExchangeRate());
-//            rate.setBaseCurrency(foundCurrency);
-//            rate.setRate(BigDecimal.valueOf(Double.parseDouble(rateValue)));
-//            rate.setTargetCurrency(currencyMapper.mapCurrencyResponseToCurrency(currency));
-//            ratesToSave.add(rate);
-//        });
-//
-//        exchangeRatesRepository.saveAll(ratesToSave);
-//
-//        currencies.forEach(currency ->
-//                filteredRates.put(currency.symbol().toUpperCase(), allRates.data().rates().get(currency.symbol().toUpperCase())));
-//
-//        return new CurrencyExchangeRatesResponse(
-//                new CurrencyExchangeRatesResponse.Data(allRates.data().currency(), filteredRates));
-//    }
 
 
     @CachePut(value = EXCHANGE_RATES_CACHE, key = "#symbol.toUpperCase()")
