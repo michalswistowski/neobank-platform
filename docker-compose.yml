@@ -1,17 +1,17 @@
 services:
 
-  wallet-db:
+  profile-db:
     image: postgres:18-alpine3.23
-    container_name: wallet-db
+    container_name: profile-db
     environment:
-      - POSTGRES_DB=wallet_db
+      - POSTGRES_DB=profile_db
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=secret
       - PGDATA=/data/postgres
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres-wallet:/data/postgres
+      - ./postgres-profile:/data/postgres
     restart: unless-stopped
 
   transaction-db:
@@ -67,11 +67,11 @@ services:
     ports:
       - 8761
     healthcheck:
-      # This checks if the port is open and responding
-      test: [ "CMD-SHELL", "java -version || exit 1" ]
+      test: [ "CMD", "wget", "-q", "-O", "-","http://localhost:8761/eureka/apps" ]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
   api-gateway:
     container_name: api-gateway
@@ -83,17 +83,18 @@ services:
     expose:
       - 8080
     depends_on:
-      - discovery-server
+      discovery-server:
+        condition: service_healthy
 
-  wallet-service:
-    container_name: wallet-service
+  profile-service:
+    container_name: profile-service
     build:
       context: .
-      dockerfile: wallet-service/Dockerfile
+      dockerfile: profile-service/Dockerfile
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://wallet-db:5432/wallet_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://profile-db:5432/profile_db
     depends_on:
-      - wallet-db
+      - profile-db
       - discovery-server
       - api-gateway
 

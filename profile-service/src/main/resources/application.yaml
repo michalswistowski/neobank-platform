@@ -1,15 +1,16 @@
 spring:
   application:
-    name: wallet-service
+    name: profile-service
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdb:postgresql://localhost:5432:wallet_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432:profile_db}
     username: ${DATASOURCE_USERNAME:user}
     password: ${DATASOURCE_PASSWORD:secret}
 
   jpa:
     hibernate:
       ddl-auto: create-drop
+    show-sql: true
 
 eureka:
   client:
@@ -18,3 +19,9 @@ eureka:
 
 server:
   port: 0
+
+logging:
+  level:
+    org:
+      springframework:
+        cache: TRACE

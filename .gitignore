@@ -60,5 +60,5 @@ build/
 
 postgres-currency
 postgres-transaction
-postgres-wallet
+postgres-profile
 postgres-account
